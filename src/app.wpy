@@ -1,0 +1,126 @@
+<style lang="less">
+@import "./icon/iconfont";
+@import "./less/config";
+@import "./less/app";
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+import Login from "./util/login";
+import Http from "./util/http";
+import db from "./util/db";
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/index',
+      'pages/bind',
+      'pages/classroom'
+    ],
+    window: {
+      navigationBarBackgroundColor: '#ffffff',
+      navigationBarTitleText: 'MeNeusoft',
+      navigationBarTextStyle: 'black',
+      backgroundColor: '#dddddd'
+    },
+    tabBar: {
+      selectedColor: '#f06292',
+      color: '#707070',
+      list: [
+        {
+          pagePath: 'pages/index',
+          text: '首页',
+          iconPath: 'icon/home.png',
+          selectedIconPath: 'icon/home@select.png'
+        },
+        {
+          pagePath: 'pages/index',
+          text: '寻课',
+          iconPath: 'icon/course.png',
+          selectedIconPath: 'icon/course@select.png'
+        },
+        {
+          pagePath: 'pages/index',
+          text: '资讯',
+          iconPath: 'icon/news.png',
+          selectedIconPath: 'icon/news@select.png'
+        },
+        {
+          pagePath: 'pages/index',
+          text: '个人中心',
+          iconPath: 'icon/user.png',
+          selectedIconPath: 'icon/user@select.png'
+        }
+      ]
+    }
+  }
+
+  onLaunch() {
+    /** 执行登录 */
+    new Login().getToken();
+    
+    /** 检查版本更新 */
+    this.checkUpdate();
+
+    /** 检查是否有通知信息 */
+    this.checkNotice();
+  }
+
+  /**  检查最新通知，如果有最新通知则弹窗提示 */
+  async checkNotice() {
+    try {
+      // 检查通知是否已阅读
+      const newst_id = db.Get("notice_new") || 0;
+      const res = await Http.Get("/notice/new", {}, false);
+      if (!res.data.abstract) return;
+      if (res.data.id === newst_id) {
+        console.log("通知已阅", newst_id);
+        return;
+      }
+      wepy.showModal({
+        title: "通知", //提示的标题,
+        content: res.data.abstract, //提示的内容,
+        showCancel: true, //是否显示取消按钮,
+        cancelText: "取消", //取消按钮的文字，默认为取消，最多 4 个字符,
+        cancelColor: "#000000", //取消按钮的文字颜色,
+        confirmText: "查看", //确定按钮的文字，默认为取消，最多 4 个字符,
+        confirmColor: "#3CC51F", //确定按钮的文字颜色,
+        success: function(r) {
+          if (r.confirm) {
+             //点击查看之后转到详情页
+            wepy.navigateTo({
+              url: `/pages/details?id=${res.data.id}&&from=notice`
+            });
+          }
+          // 保存id，用于后续判断是否显示过
+          db.Set("notice_new", res.data.id);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  /** 版本更新，主要用于热启动 */
+  checkUpdate() {
+    const updateManager = wx.getUpdateManager();
+    // 更新事件，会触发回调
+    updateManager.onUpdateReady(function() {
+      wx.showModal({
+        title: "更新提示",
+        content: "新版本已经准备好，请重启应用",
+        showCancel: false,
+        success: function(res) {
+          // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+          updateManager.applyUpdate();
+        }
+      });
+    });
+    // 更新失败事件
+    updateManager.onUpdateFailed(function() {
+      // 新的版本下载失败
+      console.log("新版本下载失败！");
+    });
+  }
+}
+</script>

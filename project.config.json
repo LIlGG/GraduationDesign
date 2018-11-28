@@ -1,0 +1,15 @@
+{
+	"description": "服务于大连东软信息学院学生的一个综合工具类微信小程序",
+	"setting": {
+		"urlCheck": false,
+		"es6": false,
+		"postcss": false,
+		"minified": false,
+		"newFeature": true
+	},
+	"compileType": "miniprogram",
+	"appid": "wxdcb9fb2e8b409568",
+	"projectname": "me-neusoft",
+	"miniprogramRoot": "dist/",
+	"condition": {}
+}

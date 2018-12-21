@@ -72,14 +72,14 @@ export default class extends wepy.app {
       // 检查通知是否已阅读
       const newst_id = db.Get("notice_new") || 0;
       const res = await Http.Get("/notice/new", {}, false);
-      if (!res.data.abstract) return;
+      if (!res.data.abstracts) return;
       if (res.data.id === newst_id) {
         console.log("通知已阅", newst_id);
         return;
       }
       wepy.showModal({
         title: "通知", //提示的标题,
-        content: res.data.abstract, //提示的内容,
+        content: res.data.abstracts, //提示的内容,
         showCancel: true, //是否显示取消按钮,
         cancelText: "取消", //取消按钮的文字，默认为取消，最多 4 个字符,
         cancelColor: "#000000", //取消按钮的文字颜色,

@@ -58,10 +58,8 @@ export default class extends wepy.app {
   onLaunch() {
     /** 执行登录 */
     new Login().getToken();
-    
     /** 检查版本更新 */
     this.checkUpdate();
-
     /** 检查是否有通知信息 */
     this.checkNotice();
   }
@@ -70,11 +68,11 @@ export default class extends wepy.app {
   async checkNotice() {
     try {
       // 检查通知是否已阅读
-      const newst_id = db.Get("notice_new") || 0;
+      const newstId = db.Get("notice_new") || 0;
       const res = await Http.Get("/notice/new", {}, false);
       if (!res.data.abstracts) return;
-      if (res.data.id === newst_id) {
-        console.log("通知已阅", newst_id);
+      if (res.data.id === newstId) {
+        console.log("通知已阅", newstId);
         return;
       }
       wepy.showModal({

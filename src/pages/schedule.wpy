@@ -403,7 +403,7 @@ export default class Schedule extends wepy.page {
           if (res.confirm) {
             resolve();
           } else {
-            reject();
+            reject(new Error(""));
           }
         }
       });
@@ -445,8 +445,9 @@ export default class Schedule extends wepy.page {
       ci++;
       e.flex = 0;
       e.sessionArr = [];
-      if (e.session[e.session.length - 1] == ",")
+      if (e.session[e.session.length - 1] == ",") {
         e.session = e.session.substr(0, e.session.length - 1);
+      }
       if (e.session !== "") {
         e.sessionArr = e.session.split(",");
         e.flex = e.sessionArr.length;
@@ -538,5 +539,3 @@ export default class Schedule extends wepy.page {
   }
 }
 </script>
-
-

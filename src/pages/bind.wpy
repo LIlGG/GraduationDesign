@@ -171,14 +171,14 @@ export default class BindJwc extends wepy.page {
         await this.notice();
       }
       // 执行绑定
-      const res = await this.POST(this.types[this.type].url || "/bind", params);
+      //const res = await this.POST(this.types[this.type].url || "/bind", params);
       // 将当前类型的绑定置为1,并确保首页可以获取到绑定信息
       db.Set(this.types[this.type].verify || "verify", 1);
       wepy.showModal({
         title: "绑定成功",
         content: "点击确认跳转到首页，请在首页点击查看Me-Neusoft使用说明！",
         showCancel: false,
-        success: function(res) {
+        success: function(/*res*/) {
           // 关闭所有页面并且跳转到首页，确保verify数据重新获取
           wepy.reLaunch({
             url: "/pages/index"
@@ -207,7 +207,7 @@ export default class BindJwc extends wepy.page {
             resolve();
             return;
           }
-          reject("取消修改");
+          reject(new Error("取消修改"));
         }
       });
     });

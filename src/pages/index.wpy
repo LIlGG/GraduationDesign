@@ -260,7 +260,7 @@ export default class Index extends wepy.page {
       if (item.type == "jwc" && !item.is_graduate) {
         wepy.showModal({
           title: "权限错误",
-          content: "研究生同学暂未开放"
+          content: "专科同学暂未开放"
         });
         return;
       }

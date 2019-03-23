@@ -1,0 +1,174 @@
+<style lang="less">
+  @import "../less/config";
+  page {
+    padding: 0 20rpx 20rpx 20rpx;
+    width: calc(~"100% - 40rpx");
+  }
+  movable-area {
+    width: 100%;
+    height: 80rpx;
+    movable-view {
+      display: block;
+    }
+  }
+  .title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #555;
+    font-size: 28rpx;
+    margin-top: 30rpx;
+    .edit {
+      color: @base-color;
+      border: 2rpx solid @base-color;
+      padding: 4rpx 8rpx;
+      border-radius: 4rpx;
+      font-size: 24rpx;
+      &.active {
+        background: @base-color;
+        color: #fff;
+      }
+    }
+  }
+  .items {
+    display: flex;
+    flex-wrap: wrap;
+    .item {
+      color: #333;
+      border: 2rpx solid #ddd;
+      padding: 8rpx 30rpx;
+      border-radius: 30rpx;
+      margin-right: 20rpx;
+      margin-top: 20rpx;
+      display: flex;
+      align-items: baseline;
+      .iconfont {
+        color: #aaa;
+        font-size: 28rpx;
+        margin-right: 4rpx;
+        display: none;
+        &.show {
+          display: flex;
+        }
+      }
+      &.all {
+        color: @base-color;
+      }
+    }
+  }
+</style>
+
+<template>
+  <view>
+    <view class="title">
+      <view>我的栏目</view>
+      <view @tap="activeHandle" class="edit {{active ?  'active' : ''}}">编辑</view>
+    </view>
+    <view class="items">
+      <view class="item all">全部</view>
+      <block wx:for="{{choose}}" wx:key="{{index}}">
+        <view @tap="delete({{item}})" class="item">
+          <view class="iconfont icon-shanchu {{active ? 'show' : ''}}"></view>
+          <view class="name">{{item.name}}</view>
+        </view>
+      </block>
+    </view>
+    <view class="title">
+      机构
+    </view>
+    <view class="items">
+      <block wx:for="{{org}}" wx:key="{{index}}">
+        <view @tap="add({{item}},org)" class="item">
+          <view class="iconfont icon-add {{active ? 'show' : ''}}"></view>
+          <view class="name">{{item}}</view>
+        </view>
+      </block>
+    </view>
+    <view class="title">
+      标签
+    </view>
+    <view class="items">
+      <block wx:for="{{tags}}" wx:key="{{index}}">
+        <view @tap="add({{item}},tags)" class="item">
+          <view class="iconfont icon-add {{active ? 'show' : ''}}"></view>
+          <view class="name">{{item}}</view>
+        </view>
+      </block>
+    </view>
+    <view class="title">
+      学院
+    </view>
+    <view class="items">
+      <block wx:for="{{college}}" wx:key="{{index}}">
+        <view @tap="add({{item}},college)" class="item">
+          <view class="iconfont icon-add {{active ? 'show' : ''}}"></view>
+          <view class="name">{{item}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from "wepy";
+  import HttpMixin from "../mixins/http";
+  import ToastMixin from "../mixins/toast";
+  import DataMixin from "../mixins/data";
+  import db from "../util/db"
+  Array.prototype.removeVal = function(val) {
+    const index = this.indexOf(val);
+    if (index > -1) {
+      this.splice(index, 1);
+    }
+  }
+  export default class ChooseTags extends wepy.page {
+    config = {
+      navigationBarTitleText: "选择标签",
+    };
+    mixins = [HttpMixin, ToastMixin, DataMixin];
+    data = {
+      active: false,
+      tags: [],
+      org: [],
+      choose: []
+    }
+    methods = {
+      activeHandle() {
+        this.active = !this.active
+      },
+      add(item, type) {
+        if (!this.active) {
+          return
+        }
+        if (this.choose.length > 10) {
+          this.ShowToast("最多十个")
+          return
+        }
+        this[type].removeVal(item)
+        this.choose.push({
+          name: item,
+          type: type
+        })
+        db.Set("chooseTags", this.choose)
+      },
+      delete(item) {
+        if (!this.active) {
+          return
+        }
+        for (let i = 0; i < this.choose.length; i++) {
+          if (this.choose[i].name == item.name) {
+            this.choose.splice(i, 1);
+          }
+        }
+        this[item.type].unshift(item.name)
+        db.Set("chooseTags", this.choose)
+      }
+    }
+    onLoad() {
+      this.choose = db.Get("chooseTags") || this.choose
+      this.choose.forEach(e => {
+        this[e.type].removeVal(e.name)
+      });
+    }
+  }
+</script>

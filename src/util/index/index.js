@@ -65,7 +65,7 @@ const funcs = [{
   type: 'normal'
 },
 {
-  name: '校车',
+  name: '路线',
   url: 'bus',
   icon: 'bus',
   bg: '#ab96c5',
@@ -131,7 +131,7 @@ const funcs = [{
   type: 'normal'
 },
 {
-  name: '研究生',
+  name: '专科生',
   url: 'my/userConfig',
   icon: 'gs',
   bg: '#ab96c5',

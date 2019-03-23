@@ -37,7 +37,7 @@ export default class HttpMixin extends wepy.mixin {
     return new Promise((resolve, reject) => {
       handler.success = res => {
         if (showToast) wepy.hideLoading && wepy.hideLoading()
-        if (res.statusCode === 401) {
+        if (res.data.code === 401) {
           new Login().showErr()
           return
         }

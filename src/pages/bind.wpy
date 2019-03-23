@@ -62,7 +62,7 @@ page {
     flex:1;
     min-height:80rpx;
     height:95rpx;
-    padding:0 25rpx;
+    padding:0 0rpx;
     border:1px solid #fefefe;
   }
 }
@@ -114,7 +114,7 @@ page {
           <text class="input-label">密码</text>
           <input name="password" type="password" placeholder="请输入您的密码" />
         </view>
-        <view class="input-group" id="input-code" hover-class="active">
+        <view wx:if='{{isVcodeShow}}' class="input-group" id="input-code" hover-class="active">
           <text class="input-label">验证码</text>
           <input name="vcode" type="number" placeholder="请输入验证码" />
           <image src="{{vcode}}"></image>
@@ -142,6 +142,7 @@ export default class BindJwc extends wepy.page {
   mixins = [HttpMixin, ToastMixin];
   components = {};
   data = {
+    isVcodeShow: false,
     vcode: "",
     type: "bind",
     types: {
@@ -150,7 +151,7 @@ export default class BindJwc extends wepy.page {
         url: "/bind",
         verify: "verify",
         help:
-          "密码为统一身份认证平台(即EDU邮箱)的密码，默认密码为身份证后六位,忘记密码可以访问 my.scu.edu.cn 找回"
+          "密码为统一身份认证平台(即EDU邮箱)的密码，默认密码为身份证后六位"
       },
       library: {
         name: "图书馆",
@@ -183,7 +184,11 @@ export default class BindJwc extends wepy.page {
   /** 加载时获取当前所要登录的类型 */
   onLoad(option) {
     this.type = option.type || this.type;
-    this.getVCode(this.type);
+    if(this.type === 'jwc'){
+      this.getVCode(this.type);
+      this.isVcodeShow = true;
+    }
+    
   }
   // 获取验证码
   async getVCode(type){

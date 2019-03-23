@@ -1,0 +1,196 @@
+<style lang="less">
+@import url("../../less/config");
+page {
+  background: @bg-color;
+}
+.search {
+  position: fixed; // top: 0;
+  padding: 10rpx 20rpx;
+  background: #fff;
+  width: 100%;
+  z-index: 9999;
+  display: flex;
+  justify-content: space-between;
+  height: 100rpx;
+  align-items: center;
+  border-bottom: 2rpx solid #ddd;
+  flex-wrap: nowrap;
+  input {
+    width: calc(~"100% - 260rpx");
+    font-size: 28rpx;
+    padding: 10rpx;
+    padding-left: 20rpx;
+    height: 40rpx;
+    background: #f6f6f6;
+  }
+  button {
+    border-radius: 0;
+    width: 150rpx;
+    height: 60rpx;
+    font-size: 28rpx;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(90deg, @base-color, #ed5a65);
+    color: #fff;
+    font-size: 28rpx;
+  }
+}
+.results {
+  width: 100%;
+  padding-top: 125rpx;
+  .result {
+    // margin-top: 0.5rem;
+    border-bottom: 3rpx solid #eee;
+    background: @white;
+    display: flex;
+    padding: 0.5rem;
+    image {
+      width: 4.5rem;
+      height: 6rem;
+      background-image: url(https://scuplus.oss-cn-shenzhen.aliyuncs.com/book.jpg);
+      background-size: cover;
+      background-position: center;
+    }
+    .info {
+      width: calc(~"100% - 5.5rem");
+      align-content: space-between;
+      display: flex;
+      margin-left: 0.5rem;
+      flex-wrap: wrap;
+      .row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+      }
+      .press {
+        font-size: 0.8rem;
+        color: #888;
+      }
+    }
+  }
+}
+</style>
+
+<template>
+  <view>
+    <form @submit="submit">
+      <view class="search">
+        <input @blur="change" @confirm="search" name="name" placeholder="请输入图书名称" confirm-type="search" auto-focus/>
+        <button form-type="submit">搜索</button>
+      </view>
+    </form>
+    <scroll-view style="height:{{height}}px;" class="results" @scrolltolower="next" enable-back-to-top scroll-y>
+      <block wx:for="{{books}}" wx:key="index">
+        <view @tap="show({{item}})" class="result">
+          <image lazy-load class="cover" src="{{item.cover}}"></image>
+          <view class="info">
+            <view class="row title">
+              <view>{{item.title}}</view>
+            </view>
+            <view class="row press">
+              <view>{{item.press}}</view>
+              <view>{{item.author}}, {{item.publish_year}}</view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+</template>
+
+<script>
+import wepy from "wepy";
+import HttpMixin from "../../mixins/http";
+import ToastMixin from "../../mixins/toast";
+export default class Search extends wepy.page {
+  mixins = [HttpMixin, ToastMixin];
+  components = {};
+  config = {
+    navigationBarTitleText: "图书搜索"
+  };
+  data = {
+    books: [],
+    cur_page: 1,
+    page_size: 1,
+    next_page: 1,
+    height: 280,
+    loading: false,
+    name: ""
+  };
+  methods = {
+    submit(e) {
+      this.name = e.detail.value.name;
+      this.getBooks(this.name, false);
+    },
+    search(e) {
+      this.name = e.detail.value;
+      this.getBooks(this.name, false);
+    },
+    change(e) {
+      this.name = e.detail.value;
+    },
+    next(e) {
+      this.getBooks(this.name, true);
+    },
+    async show(item) {
+      this.loading = true;
+      const result = await this.POST("/library/detailBook", {
+        detailId: item.detailId
+      });
+      this.loading = false;
+      let details = result.details;
+      let content = `索书号: ${details.number};\r\n`;
+      details.book_addresses.forEach(e => {
+        content += `馆藏：${e.address}, 状态：${e.bookStatus}, 应还日期：${
+          e.dueData
+        };\r\n`;
+      });
+      wepy.showModal({
+        title: item.title,
+        content: content,
+        showCancel: false
+      });
+    }
+  };
+  async getBooks(keyword, isNext) {
+    let curPage = 1;
+    if (this.loading) return;
+    if (isNext) {
+      curPage = Number(this.cur_page) + 1;
+      if (curPage > this.page_size) {
+        this.ShowToast("已经到底了");
+        return;
+      }
+    }
+    this.loading = true;
+    const resp = await this.POST("/library/search", {
+      keyword: keyword,
+      key_type: "WRD",
+      cur_page: curPage
+    });
+    this.loading = false;
+    
+    if (resp.data.books.length === 0) {
+      this.ShowToast("没有搜索到图书");
+      return;
+    }
+    if (curPage === 1) {
+      this.books = resp.data.books;
+    } else {
+      this.books = this.books.concat(resp.data.books);
+    }
+    this.cur_page = resp.data.curPage;
+    this.page_size = resp.data.pageSize;
+    this.$apply();
+  }
+  onLoad() {
+    this.height = wx.getSystemInfoSync().windowHeight - 36;
+  }
+  onShareAppMessage(options) {
+    return {
+      title: "搜索书籍"
+    };
+  }
+}
+</script>

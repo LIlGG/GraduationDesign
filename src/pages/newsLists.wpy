@@ -131,6 +131,7 @@ export default class NewsLists extends wepy.page {
       if(resp.data.length > 0){
         db.Set("chooseTags", resp.data);
       }
+      this.$apply();
     }
   }
   onShareAppMessage(options) {

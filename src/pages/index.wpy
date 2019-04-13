@@ -191,6 +191,11 @@ export default class Index extends wepy.page {
         name: "统一认证中心",
         params: "bind",
         key: "verify"
+      },
+      ecard: {
+        name: "一卡通",
+        params: "ecard",
+        key: "ecard_verify"
       }
     }
   };
@@ -206,6 +211,9 @@ export default class Index extends wepy.page {
     },
     jwc_verify() {
       return db.Get("jwc_verify");
+    },
+    ecard_verify() {
+      return db.Get("ecard_verify");
     },
     /** 课表 */
     todaySchedules() {
@@ -279,13 +287,13 @@ export default class Index extends wepy.page {
         return;
       }
     }
-
+    
     /** 所点击类型为需要验证的系统 */
     if (item.type in this.verifyChecks) {
       let check = this.verifyChecks[item.type];
       if (!this[check.key]) {
         wepy.showModal({
-          title: "账号信息错误",
+          title: "绑定信息错误",
           content: check.name + "账号未绑定或密码错误！是否前往绑定？",
           success: function(res) {
             if (res.confirm) {

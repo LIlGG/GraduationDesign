@@ -47,7 +47,7 @@ const funcs = [{
   url: 'ecard',
   icon: 'card',
   bg: '#b92c18',
-  type: 'my'
+  type: 'ecard'
 },
 {
   name: '考表',

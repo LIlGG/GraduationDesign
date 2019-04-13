@@ -17,13 +17,19 @@ export default class extends wepy.app {
       'pages/course/lists',
       'pages/newsLists',
       'pages/my/my',
+      'pages/my/notifyConfig',
+      'pages/my/feedback',
+      'pages/my/feedbackDetail',
+      'pages/my/feedbackList',
       'pages/bind',
       'pages/classroom',
       'pages/schedule',
       "pages/library/loan",
       "pages/library/search",
       "pages/details",
-      "pages/chooseTags"
+      "pages/chooseTags",
+      "pages/ecard",
+      "pages/help"
     ],
     window: {
       navigationBarBackgroundColor: '#ffffff',

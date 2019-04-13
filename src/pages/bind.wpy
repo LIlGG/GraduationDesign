@@ -167,19 +167,19 @@ export default class BindJwc extends wepy.page {
     vcode: "",
     type: "bind",
     types: {
-      bind: {
-        name: "统一认证账号",
+      ufs: {
+        name: "统一认证账号(UFS)",
         url: "/bind",
-        verify: "verify",
+        verify: "ufs_verify",
         help:
-          "密码为统一身份认证平台(即EDU邮箱)的密码，默认密码为身份证后六位"
+          "密码为统一身份认证平台的密码,忘记密码可访问统一身份认证系统找回"
       },
       library: {
         name: "图书馆",
         url: "/library/bind",
         verify: "library_verify",
         help:
-          "密码为图书馆的密码，默认密码为身份证后六位,忘记密码可以访问图书馆找回"
+          "密码为图书馆的密码,忘记密码可以访问图书馆找回"
       },
       jwc: {
         name: "教务处",

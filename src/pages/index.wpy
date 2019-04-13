@@ -187,10 +187,10 @@ export default class Index extends wepy.page {
         params: "library",
         key: "library_verify"
       },
-      my: {
+      ufs: {
         name: "统一认证中心",
-        params: "bind",
-        key: "verify"
+        params: "ufs",
+        key: "ufs_verify"
       },
       ecard: {
         name: "一卡通",
@@ -202,6 +202,9 @@ export default class Index extends wepy.page {
   computed = {
     verify() {
       return db.Get("verify");
+    },
+    ufs_verify() {
+      return db.Get("ufs_verify");
     },
     library_verify() {
       return db.Get("library_verify");
@@ -279,7 +282,7 @@ export default class Index extends wepy.page {
           success: function(res) {
             if (res.confirm) {
               wepy.navigateTo({
-                url: "bind?type=bind"
+                url: "bind?type=ufs"
               });
             }
           }

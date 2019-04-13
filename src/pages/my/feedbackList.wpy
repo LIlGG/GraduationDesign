@@ -105,5 +105,9 @@
     async onLoad() {
       this.Init("feedbacks")
     }
+
+    onShow() {
+      this.get();
+    }
   }
 </script>

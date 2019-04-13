@@ -76,7 +76,7 @@ const funcs = [{
   url: 'lostFind/lists',
   icon: 'lost_find',
   bg: '#ab96c5',
-  type: 'jwc',
+  type: 'ufs',
   is_graduate: true
 },
 {
@@ -105,7 +105,7 @@ const funcs = [{
   url: 'evaluate/lists',
   icon: 'eva',
   bg: '#ab96c5',
-  type: 'jwc',
+  type: 'ufs',
   is_graduate: false
 },
 {
@@ -113,7 +113,7 @@ const funcs = [{
   url: 'course/commentLists',
   icon: 'course_eva',
   bg: '#ab96c5',
-  type: 'jwc',
+  type: 'ufs',
   is_graduate: false
 },
 {

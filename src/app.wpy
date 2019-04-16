@@ -33,7 +33,9 @@ export default class extends wepy.app {
       "pages/details",
       "pages/chooseTags",
       "pages/ecard",
-      "pages/help"
+      "pages/help",
+      "pages/contact/detail",
+      "pages/contact/lists"
     ],
     window: {
       navigationBarBackgroundColor: '#ffffff',

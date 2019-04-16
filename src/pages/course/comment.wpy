@@ -4,14 +4,15 @@ page {
   // background: @bg-color;
   font-size: 28rpx;
 }
+.title {
+  margin-left: 20rpx;
+}
 radio-group {
   margin: 20rpx;
   margin-bottom: 30rpx;
   display: flex;
   align-items: baseline;
-  .title {
-    margin-right: 20rpx;
-  }
+
   .radios {
     display: flex;
     flex-wrap: wrap;
@@ -59,6 +60,7 @@ button {
   background: linear-gradient(90deg, @base-color, #ed5a65);
   color: #fff;
   font-size: 28rpx;
+  z-index: 9999;
 }
 .header {
   color: #000;
@@ -72,20 +74,21 @@ button {
   color: #888;
   margin: 20rpx;
   font-size: 26rpx;
+  padding-bottom: 80rpx;
 }
 </style>
 
 <template>
   <view>
     <view class="header">
-      {{course_name || eva_params.course_name + '-' + eva_params.teacher_name}}
+      {{course_name || eva.courseName + '-' + eva.teacherName}}
     </view>
     <form @submit="submit">
-      <block wx:for="{{items}}" wx:key="{{index}}">
-        <radio-group name="{{item.name}}" class="radio-group">
-          <view class="title">
+      <block wx:for="{{eva.items}}" wx:key="{{index}}">
+        <view class="title">
             {{item.title}}
-          </view>
+        </view>
+        <radio-group wx:if="{{item.type == 'radio'}}" name="{{item.name}}" class="radio-group">
           <view class="radios">
             <block wx:for="{{item.radios}}" wx:key="i" wx:for-index="i" wx:for-item="data">
               <label @tap="checked({{index}},{{i}})" class="{{data.checked ? 'checked' : ''}}">
@@ -93,14 +96,14 @@ button {
             </block>
           </view>
         </radio-group>
+        <textarea wx:if="{{item.type == 'textarea'}}" name="{{item.name}}" value="{{this.item.comment}}" placeholder="请输入评价"></textarea>
       </block>
-      <textarea name="comment" value="{{comment}}" placeholder="请输入课程评价"></textarea>
       <button wx:if="{{!(from == 'evaluate' && eva_params.status == 1)}}" form-type="submit">
         提交课程评价
       </button>
     </form>
     <view wx:if="{{from == 'evaluate'}}" class="tips">
-      将您的评价分数很好(5)\一般(4)\糟糕(3)，以及课程评价内容提交到教务处,点名/考核/作业选项不会提交到教务处。系统将您的评价会匿名展示在课程的详细信息下，请客观理性的评价。
+      您的评价点名/考核/作业选项不会被提交到教务处。系统将您的评价会匿名展示在课程的详细信息下，请客观理性的评价。
     </view>
     <view wx:else class="tips">
       您的评价将会匿名展示在课程的详细信息下，请客观理性的评价。
@@ -122,9 +125,11 @@ export default class CourseLists extends wepy.page {
   mixins = [HttpMixin, ToastMixin];
   data = {
     params: {},
-    comment: "",
+    comment: [],
     items: [
       {
+        comment:"",
+        type: "radio",
         name: "call_name",
         title: "点名",
         radios: [
@@ -151,11 +156,13 @@ export default class CourseLists extends wepy.page {
         ]
       },
       {
+        comment:"",
+        type: "radio",
         name: "exam_type",
         title: "考核",
         radios: [
           {
-            name: "论文",
+            name: "项目",
             value: 1,
             checked: false
           },
@@ -170,13 +177,20 @@ export default class CourseLists extends wepy.page {
             checked: false
           },
           {
+             name:"上机",
+             value: 4,
+             checked: false
+          },
+          {
             name: "其他",
-            value: 4,
+            value: 5,
             checked: false
           }
         ]
       },
       {
+        comment:"",
+        type: "radio",
         name: "task",
         title: "作业",
         radios: [
@@ -191,39 +205,19 @@ export default class CourseLists extends wepy.page {
             checked: false
           }
         ]
-      },
-      {
-        name: "star",
-        title: "评价",
-        radios: [
-          {
-            name: "很好",
-            value: 3,
-            checked: false
-          },
-          {
-            name: "一般",
-            value: 2,
-            checked: false
-          },
-          {
-            name: "糟糕",
-            value: 1,
-            checked: false
-          }
-        ]
       }
     ],
+    eva:{},
     course_name: "",
     eva_params: {},
     from: "course"
   };
   methods = {
     checked(i, j) {
-      for (let m = 0; m < this.items[i].radios.length; m++) {
-        if (m != j) this.items[i].radios[m].checked = false;
+      for (let m = 0; m < this.eva.items[i].radios.length; m++) {
+        if (m != j) this.eva.items[i].radios[m].checked = false;
       }
-      this.items[i].radios[j].checked = !this.items[i].radios[j].checked;
+      this.eva.items[i].radios[j].checked = !this.eva.items[i].radios[j].checked;
     },
     async submit(e) {
       if (this.from == "evaluate") {
@@ -236,7 +230,10 @@ export default class CourseLists extends wepy.page {
   };
   async submitEvaluate(e) {
     let params = e.detail.value;
-    params.id = this.eva_params.id;
+    params.courseName = this.eva.courseName;
+    params.teacherName = this.eva.teacherName;
+    params.hiddlers = JSON.stringify(this.eva.hiddlers);
+    console.log(params)
     for (const x in params) {
       if (!params[x]) {
         this.ShowToast("所有项目均为必填！");
@@ -299,24 +296,25 @@ export default class CourseLists extends wepy.page {
   async initEva(option) {
     try {
       this.from = option.from;
-      const res = await this.POST("/evaluate/" + option.id, option.data);
-      let eva = res.data.evaluate;
-      let course_eva = res.data.course_evaluate;
+      const res = await this.POST("/evaluate/" + option.id, {"data":option.data});
+      res.data.items = this.items.concat(res.data.items);
+      this.eva = res.data;
+      console.log(this.eva)
+      // let course_eva = res.data.course_evaluate;
+      // this.eva_params = eva;
+      // if (eva.status) {
+      //   course_eva.star = eva.star - 2 < 1 ? 1 : eva.star - 2;
+      // }
 
-      this.eva_params = eva;
-      if (eva.status) {
-        course_eva.star = eva.star - 2 < 1 ? 1 : eva.star - 2;
-      }
-
-      for (let i = 0; i < this.items.length; i++) {
-        const v = course_eva[this.items[i].name];
-        for (let j = 0; j < this.items[i].radios.length; j++) {
-          this.items[i].radios[j].checked = false;
-          if (v == this.items[i].radios[j].value)
-            this.items[i].radios[j].checked = true;
-        }
-      }
-      this.comment = eva.comment;
+      // for (let i = 0; i < this.items.length; i++) {
+      //   const v = course_eva[this.items[i].name];
+      //   for (let j = 0; j < this.items[i].radios.length; j++) {
+      //     this.items[i].radios[j].checked = false;
+      //     if (v == this.items[i].radios[j].value)
+      //       this.items[i].radios[j].checked = true;
+      //   }
+      // }
+      // this.comment = eva.comment;
       this.$apply();
     } catch (error) {
       this.ShowToast("参数错误！");

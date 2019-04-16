@@ -263,7 +263,7 @@ export default class Details extends wepy.page {
       title: resp.data.title
     });
     this.title = resp.data.title;
-    this.time = dayjs(resp.data.newCreatedAt).format("YYYY-MM-DD");
+    this.time = dayjs(resp.data.createdAt).format("YYYY-MM-DD");
     this.shareOption.title = resp.data.title;
     this.shareOption.content = resp.data.content.replace(/<[^>]*>|\s+/g, "");
     this.shareOption.params =

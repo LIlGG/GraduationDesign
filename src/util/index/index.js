@@ -11,7 +11,7 @@ const funcs = [{
   url: 'grade',
   icon: 'grade',
   bg: '#99ccee',
-  type: 'jwc',
+  type: 'ufs',
   is_graduate: true
 },
 {

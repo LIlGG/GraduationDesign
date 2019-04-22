@@ -40,7 +40,8 @@ export default class extends wepy.app {
       'pages/help',
       'pages/newsLists',
       'pages/schedule',
-      'pages/calendar'
+      'pages/calendar',
+      'pages/grade'
     ],
     window: {
       navigationBarBackgroundColor: '#ffffff',

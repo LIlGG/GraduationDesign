@@ -6,11 +6,11 @@ const domains = {
 export const domain = domains[env]
 export const version = '0.8.0' // 版本号
 
-export const COSConf = {
+export const OSSConf = {
   key: {
-    SecretId: 'xxx',
-    SecretKey: 'xxx'
+    accessKeyId: 'LTAI6klXkZynQctv',
+    accessKeySecret: 'SvyCnqMThmPUJBbOGziWxS9Atyspm7'
   },
-  bucket: 'xxx',
-  region: 'xxx'
+  timeout: 87600,
+  uploadImageUrl: 'https://me-neusoft.oss-cn-beijing.aliyuncs.com'
 }

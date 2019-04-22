@@ -1,0 +1,206 @@
+<style lang="less">
+@import "./src/less/config";
+page {
+  background: @bg-color;
+  font-size: 28rpx;
+  padding-bottom: 80rpx;
+}
+.screenshots {
+  width: 100%;
+  height: 422rpx;
+  .slide-image {
+    background: #fff;
+    width: 100%;
+    height: 422rpx;
+    background-size: cover;
+    background-position: center;
+  }
+}
+.header {
+  &.group {
+    border-top: none;
+  }
+  .name {
+    font-size: 30rpx;
+    font-weight: bold;
+    margin-bottom: 30rpx;
+  }
+  .info {
+    display: flex;
+    font-size: 24rpx;
+    color: #888;
+    > view {
+      margin-right: 15rpx;
+      display: flex;
+      .iconfont {
+        margin-right: 5rpx;
+      }
+    }
+  }
+}
+.group {
+  background: #fff;
+  padding: 20rpx;
+  margin-bottom: 15rpx;
+  border-bottom: 2rpx solid #eee;
+  border-top: 2rpx solid #eee;
+  &.screenshot {
+    margin-bottom: 0;
+    border-bottom: none;
+    .title {
+      margin-bottom: 0;
+    }
+  }
+  .title {
+    margin-bottom: 30rpx;
+    border-left: 10rpx solid @base-color;
+    padding-left: 20rpx;
+  }
+}
+button.mo-btn {
+  position: fixed;
+  bottom: 0;
+}
+</style>
+<template>
+  <view>
+    <view class="header group">
+      <view class="name">
+        {{item.title}}
+      </view>
+      <view class="info">
+        <view class="user">
+          <view class="iconfont icon-user"></view>
+          <view>{{item.nickName || '某同学'}}</view>
+        </view>
+        <view class="time">
+          <view class="iconfont icon-time"></view>
+          <view>{{item.createdAt}}</view>
+        </view>
+      </view>
+    </view>
+    <view class="group">
+      <view class="title">
+        描述
+      </view>
+      <view class="content">
+        {{item.info}}
+      </view>
+    </view>
+    <view class="group">
+      <view class="title">
+        地点
+      </view>
+      <view class="content">
+        {{item.address}}
+      </view>
+    </view>
+    <view class="group">
+      <view class="title">
+        联系方式
+      </view>
+      <view class="content">
+        {{item.nickName}}（{{item.contact}}）
+      </view>
+    </view>
+    <view class="group" wx:if="{{item.category == '一卡通招领'}}">
+      <view class="title">
+        一卡通信息
+      </view>
+      <view class="content">
+        <view>系别: {{item.cardInfo.genealogy}}</view>
+        <view>班级: {{item.cardInfo.moth}}</view>
+        <view>姓名: {{item.cardInfo.name}}</view>
+      </view>
+    </view>
+    <block wx:if="{{item.category != '一卡通招领' && images.length > 0}}">
+      <view class="group screenshot">
+        <view class="title">
+          截图
+        </view>
+      </view>
+      <swiper class="screenshots">
+        <block wx:for="{{images}}" wx:key="index">
+          <swiper-item>
+            <view @tap="showImg({{item}})" style="background-image: url({{item}})" class="slide-image"></view>
+          </swiper-item>
+        </block>
+      </swiper>
+    </block>
+    <button wx:if="{{isMe}}" @tap="to()" class="mo-btn">修改信息</button>
+  </view>
+</template>
+<script>
+import wepy from "wepy";
+import HttpMixin from "../../mixins/http";
+import ToastMixin from "../../mixins/toast";
+import db from "../../util/db";
+import dayjs from "dayjs";
+export default class BindJwc extends wepy.page {
+  config = {
+    enablePullDownRefresh: true
+  };
+  mixins = [HttpMixin, ToastMixin];
+  data = {
+    images: [],
+    height: 500,
+    item: {},
+    isMe: false,
+    id: 1
+  };
+
+  methods = {
+    to() {
+      wepy.navigateTo({
+        url: "/pages/lostFind/new?item=" + JSON.stringify(this.item)
+      });
+    },
+    showImg(url) {
+      wepy.previewImage({
+        urls: this.images, //需要预览的图片链接列表,
+        current: url
+      });
+    }
+  };
+
+ 
+
+  async get() {
+    try {
+      const res = await this.GET("/lost_find/" + this.id);
+      let data = res.data.data;
+      data.createdAt = dayjs(data.createdAt).format("YYYY-MM-DD");
+      if (data.category == "一卡通招领") {
+        if (data.cardInfo != "") {
+          data.cardInfo = JSON.parse(data.cardInfo);
+        } else {
+          data.cardInfo = {};
+        }
+      } else {
+        if (data.pictures != "" && data.pictures!=null) this.images = data.pictures.split(",");
+      }
+
+      this.isMe = res.data.isMe;
+      this.item = data;
+      wepy.setNavigationBarTitle({ title: data.title });
+      this.$apply();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async onPullDownRefresh() {
+    await this.get();
+    wepy.stopPullDownRefresh();
+  }
+
+  onLoad(option) {
+    if (!("id" in option)) {
+      this.ShowToast("参数错误！");
+      return;
+    }
+    this.id = option.id;
+    this.get();
+  }
+}
+</script>

@@ -21,13 +21,15 @@
   "author": "1103069291@qq.com",
   "license": "MIT",
   "dependencies": {
+    "ali-oss": "^6.1.1",
     "cryptiles": "^4.1.3",
     "dayjs": "^1.8.11",
     "hoek": "^6.1.2",
     "less": "^3.9.0",
     "wepy": "^1.6.0",
     "wepy-async-function": "^1.4.4",
-    "wepy-com-toast": "^1.0.2"
+    "wepy-com-toast": "^1.0.2",
+    "wepy-plugin-aliyun-oss": "^1.2.10"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.1",

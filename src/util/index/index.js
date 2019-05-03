@@ -1,11 +1,12 @@
-const funcs = [{
-  name: '课程表',
-  url: 'schedule',
-  icon: 'schedule',
-  bg: '#eacdd1',
-  type: 'jwc',
-  is_graduate: true
-},
+const funcs = [
+//   {
+//   name: '课程表',
+//   url: 'schedule',
+//   icon: 'schedule',
+//   bg: '#eacdd1',
+//   type: 'jwc',
+//   is_graduate: true
+// },
 {
   name: '成绩',
   url: 'grade',
@@ -14,13 +15,13 @@ const funcs = [{
   type: 'ufs',
   is_graduate: true
 },
-{
-  name: '自习',
-  url: 'classroom',
-  icon: 'classroom',
-  bg: '#90caaf',
-  type: 'normal'
-},
+// {
+//   name: '自习',
+//   url: 'classroom',
+//   icon: 'classroom',
+//   bg: '#90caaf',
+//   type: 'normal'
+// },
 {
   name: '我的借阅',
   url: 'library/loan',
@@ -49,14 +50,14 @@ const funcs = [{
   bg: '#b92c18',
   type: 'ecard'
 },
-{
-  name: '考表',
-  url: 'exam',
-  icon: 'exam',
-  bg: '#2578b5',
-  type: 'jwc',
-  is_graduate: false
-},
+// {
+//   name: '考表',
+//   url: 'exam',
+//   icon: 'exam',
+//   bg: '#2578b5',
+//   type: 'jwc',
+//   is_graduate: false
+// },
 {
   name: '校历',
   url: 'calendar',
@@ -64,13 +65,13 @@ const funcs = [{
   bg: '#008e59',
   type: 'normal'
 },
-{
-  name: '路线',
-  url: 'bus',
-  icon: 'bus',
-  bg: '#ab96c5',
-  type: 'normal'
-},
+// {
+//   name: '路线',
+//   url: 'bus',
+//   icon: 'bus',
+//   bg: '#ab96c5',
+//   type: 'normal'
+// },
 {
   name: '失物招领',
   url: 'lostFind/lists',
@@ -108,14 +109,14 @@ const funcs = [{
   type: 'ufs',
   is_graduate: false
 },
-{
-  name: '课程评价',
-  url: 'course/commentLists',
-  icon: 'course_eva',
-  bg: '#ab96c5',
-  type: 'ufs',
-  is_graduate: false
-},
+// {
+//   name: '课程评价',
+//   url: 'course/commentLists',
+//   icon: 'course_eva',
+//   bg: '#ab96c5',
+//   type: 'ufs',
+//   is_graduate: false
+// },
 {
   name: '我的反馈',
   url: 'my/feedbackList',
@@ -136,7 +137,8 @@ const funcs = [{
   icon: 'gs',
   bg: '#ab96c5',
   type: 'normal'
-},
+}
+,
 {
   name: '打赏',
   url: 'money',

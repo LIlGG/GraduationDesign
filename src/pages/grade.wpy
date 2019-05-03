@@ -135,7 +135,7 @@ page {
           <view @tap="selectTerm({{index}},{{!item.grades[0].selected}})" class="grade-header">
             <text wx:if="{{item.grades[0].year === -1}}" class="title">尚不及格</text>
             <text wx:if="{{item.grades[0].year === -2}}" class="title">曾不及格季学期</text>
-            <text wx:if="{{item.grades[0].year >=   0}}" class="title">{{item.grades[0].year}}~{{item.grades[0].year+1}}学年{{item.grades[0].term ? '春' : '秋'}}季学期</text>
+            <text wx:if="{{item.grades[0].year >=   0}}" class="title">{{item.grades[0].year}}~{{item.grades[0].year+1}}学年{{item.grades[0].term == 1 ? '春季' : item.grades[0].term == 2 ? '秋季' : '小'}}学期</text>
             <view>
               <view class="info">
                 <text>必修绩点：{{item.avg.required.gpa}}</text>
@@ -320,7 +320,7 @@ page {
     help(i) {
       this.bottom_active = i;
       wepy.navigateTo({
-        url: `details?id=3&&from=notice`
+        url: `details?id=6&&from=notice`
       });
     },
     deleteSelect(i) {

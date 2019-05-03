@@ -164,13 +164,8 @@ export default class My extends wepy.page {
     ],
     binds: [
       {
-        name: "教务处绑定",
-        url: "/pages/bind?type=jwc",
-        type: "page"
-      },
-      {
         name: "统一认证中心绑定",
-        url: "/pages/bind",
+        url: "/pages/bind?type=ufs",
         type: "page"
       },
       {

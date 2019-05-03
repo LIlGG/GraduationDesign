@@ -49,6 +49,8 @@ function wxParse (bindName = 'wxParseData', type = 'html', data = '<div class="c
   }
   var bindData = {}
   bindData[bindName] = transData
+  console.log(bindData);
+  
   that.setData(bindData)
   that.bindData = bindData
   that.wxParseImgLoad = wxParseImgLoad

@@ -59,7 +59,7 @@ page {
             </view>
             <view class="time">
               <view class="iconfont icon-time"></view>
-              <view class="">{{item.created_at}}</view>
+              <view class="">{{item.createdAt}}</view>
             </view>
           </view>
         </view>
@@ -113,7 +113,7 @@ export default class Help extends wepy.page {
     try {
       const res = await this.GET("/helps");
       for (let i = 0; i < res.data.length; i++) {
-        res.data[i].created_at = dayis(res.data[i].created_at).format(
+        res.data[i].createdAt = dayis(res.data[i].createdAt).format(
           "YYYY-MM-DD"
         );
         // res.data[i].active = false;

@@ -37,7 +37,9 @@ export default class HttpMixin extends wepy.mixin {
     return new Promise((resolve, reject) => {
       handler.success = res => {
         if (showToast) wepy.hideLoading && wepy.hideLoading()
-        if (res.data.code === 401) {
+        console.log(res);
+        if (res.data.status === 401) {
+          db.remove('token')
           new Login().showErr()
           return
         }

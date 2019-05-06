@@ -15,13 +15,13 @@ const funcs = [
   type: 'ufs',
   is_graduate: true
 },
-// {
-//   name: '自习',
-//   url: 'classroom',
-//   icon: 'classroom',
-//   bg: '#90caaf',
-//   type: 'normal'
-// },
+{
+  name: '自习',
+  url: 'classroom',
+  icon: 'classroom',
+  bg: '#90caaf',
+  type: 'normal'
+},
 {
   name: '我的借阅',
   url: 'library/loan',

@@ -71,7 +71,7 @@ page {
           <view class="room-name">{{item.roomName}}</view>
           <block wx:for="{{item.classUse}}" wx:for-item="val" wx:key="{{index}}">
             <view @tap="show({{item}},{{index}})" class="item">
-              <view class="{{val.use == 0 ? 'not-use' : 'use'}}">{{val.kcm ? val.kcm[2] : '空'}}</view>
+              <view class="{{val.use == 0 ? 'not-use' : 'use'}}">{{val.kcm ? val.kcm : '空'}}</view>
             </view>
           </block>
         </view>
@@ -92,41 +92,97 @@ export default class Classroom extends wepy.page {
   data = {
     building: {
       addr: "本校区",
-      name: "A1",
-      value: "A1"
+      name: "教学楼A1",
+      value: "110"
     },
     buildings: [
       [
         {
           name: "本校区",
-          value: "BXQ"
+          value: "1"
         }
       ],
       [
         {
-          name: "A1",
-          value: "A1"
+          name: "教学楼A1",
+          value: "110"
         },
         {
-          name: "A2",
-          value: "A2"
+          name: "教学楼A2",
+          value: "109"
         },
         {
-          name: "A3",
-          value: "A3"
+          name: "教学楼A3",
+          value: "108"
         },
         {
-          name: "A4",
-          value: "A4"
+          name: "教学楼A5",
+          value: "107"
         },
         {
-          name: "A5",
-          value: "A5"
+          name: "教学楼A6",
+          value: "106"
+        },
+        {
+          name: "教学楼A7",
+          value: "105"
+        },
+        {
+          name: "综合楼A11",
+          value: "101"
+        },
+        {
+          name: "教学楼A12",
+          value: "114"
+        },
+        {
+          name: "大学生活动中心",
+          value: "112"
         }
+        
       ]
     ],
     index: [0, 0],
-    rooms: []
+    rooms: [{
+      roomName:"110",
+      classUse:[
+        {
+          jsm:null,
+          kcm:null,
+          teacher:null,
+          use:0,
+          classNames:null
+        },
+        {
+          jsm:"大学英语I（四）",
+          kcm:"课",
+          teacher:"王慧慧",
+          use:1,
+          classNames:"商务S15001 商务S15002 商务S15003"
+        },
+        {
+          jsm:null,
+          kcm:null,
+          teacher:null,
+          use:0,
+          classNames:null
+        },
+        {
+          jsm:null,
+          kcm:null,
+          teacher:null,
+          use:0,
+          classNames:null
+        },
+        {
+          jsm:null,
+          kcm:null,
+          teacher:null,
+          use:0,
+          classNames:null
+        }
+      ]
+    }]
   };
   computed = {
   };
@@ -152,9 +208,9 @@ export default class Classroom extends wepy.page {
     show(item, i) {
       /** 教室点击事件 */
       wepy.showModal({
-        title: this.building.name + item.roomName,
-        content: `座位数: ${item.roomZws}, 第${i + 1}大节: ${item.classUse[i]
-          .kcm || "空闲"}`,
+        title: this.building.name +"-"+ item.roomName,
+        content: `第${i + 1}大节: ${item.classUse[i]
+          .jsm || "空闲"}\r\n授课教师: ${item.classUse[i].teacher}\r\n授课班级: ${item.classUse[i].classNames}`,
         showCancel: false
       });
     }
@@ -164,7 +220,9 @@ export default class Classroom extends wepy.page {
     const resp = await this.POST("/classroom", {
       classroom: classroom
     });
-    this.rooms = JSON.parse(resp.data).roomdata;
+    // console.log(resp);
+    
+    this.rooms = resp.rooms;
     this.$apply();
     db.Set("classroom", this.building);
   }

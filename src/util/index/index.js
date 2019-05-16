@@ -131,14 +131,14 @@ const funcs = [
   bg: '#ab96c5',
   type: 'normal'
 },
-{
-  name: '专科生',
-  url: 'my/userConfig',
-  icon: 'gs',
-  bg: '#ab96c5',
-  type: 'normal'
-}
-,
+// {
+//   name: '专科生',
+//   url: 'my/userConfig',
+//   icon: 'gs',
+//   bg: '#ab96c5',
+//   type: 'normal'
+// }
+// ,
 {
   name: '打赏',
   url: 'money',

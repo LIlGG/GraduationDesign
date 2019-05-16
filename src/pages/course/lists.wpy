@@ -130,14 +130,6 @@ radio .wx-radio-input {
     }
   }
 }
-.ad {
-  margin-top: 15rpx;
-  padding-left: 15rpx;
-  padding-right: 15rpx;
-  ad {
-    border-radius: 6rpx;
-  }
-}
 </style>
 
 <template>
@@ -163,7 +155,7 @@ radio .wx-radio-input {
             筛选
           </view>
         </view>
-        <view class="form">
+        <scroll-view style="height: {{height-190}}px;" scroll-y class="form">
           <block wx:for="{{filters}}" wx:key="index">
             <view class="card">
               <view class="title">
@@ -179,7 +171,7 @@ radio .wx-radio-input {
               </radio-group>
             </view>
           </block>
-        </view>
+        </scroll-view>
         <view class="footer">
           <button formType="submit">提交</button>
           <button formType="reset">重置</button>
@@ -202,10 +194,7 @@ import ToastMixin from "../../mixins/toast";
 import db from "../../util/db";
 import DataMixin from "../../mixins/data";
 import Card from "../../components/course/card";
-const callTypes = ["", "不点名", "偶尔点名", "抽点", "全点"];
-const examTypes = ["", "论文", "考试", "大作业", "其他"];
-const taskTypes = ["", "没作业", "有作业"];
-const orders = ["star desc", "star asc", "avg_grade desc", "avg_grade asc"];
+const orders = ["lesson_id-asc", "lesson_id-desc", "class_hour-asc", "class_hour-desc","credit-asc", "credit-desc"];
 export default class CourseLists extends wepy.page {
   config = {
     navigationBarTitleText: "寻课"
@@ -222,101 +211,229 @@ export default class CourseLists extends wepy.page {
     height: 500,
     isEmpty: false,
     params: {
-      call_name: "",
-      task: "",
-      exam_type: "",
-      campus: "",
-      day: ""
+      classHour: "",
+      credit: "",
+      type: "",
+      examType: "",
+      college: "",
+      day: "",
+      session:""
     },
-    order: "star desc",
-    orderNames: ["评价", "评价", "平均分", "平均分"],
+    order: "lesson_id-asc",
+    orderNames: ["课程号", "课程号", "课时","课时","学分","学分"],
     orderIndex: 0,
     filters: [
       {
-        name: "call_name",
-        title: "点名方式",
+        name: "classHour",
+        title: "课时",
         radios: [
           {
-            name: "全点",
-            value: 4,
+            name: "12课时",
+            value: 12,
             checked: false
           },
           {
-            name: "抽点",
-            value: 3,
+            name: "16课时",
+            value: 16,
             checked: false
           },
           {
-            name: "偶尔点名",
-            value: 2,
+            name: "24课时",
+            value: 24,
             checked: false
           },
           {
-            name: "不点名",
-            value: 1,
+            name: "32课时",
+            value: 32,
+            checked: false
+          },
+          {
+            name: "48课时",
+            value: 48,
+            checked: false
+          },
+          {
+            name: "64课时",
+            value: 64,
+            checked: false
+          },
+          {
+            name: "80课时",
+            value: 80,
+            checked: false
+          },
+          {
+            name: "96课时",
+            value: 96,
+            checked: false
+          },
+          {
+            name: "128课时",
+            value: 128,
+            checked: false
+          },
+          {
+            name: "160课时",
+            value: 160,
+            checked: false
+          },
+          {
+            name: "192课时",
+            value: 192,
             checked: false
           }
         ]
       },
       {
-        name: "exam_type",
+        name: "credit",
+        title: "学分",
+        radios: [
+          {
+            name: "1学分",
+            value: 1,
+            checked: false
+          },
+          {
+            name: "2学分",
+            value: 2,
+            checked: false
+          },
+          {
+            name: "3学分",
+            value: 3,
+            checked: false
+          },
+          {
+            name: "4学分",
+            value: 4,
+            checked: false
+          },
+          {
+            name: "5学分",
+            value: 5,
+            checked: false
+          },
+          {
+            name: "6学分",
+            value: 6,
+            checked: false
+          },
+          {
+            name: "8学分",
+            value: 8,
+            checked: false
+          },
+          {
+            name: "10学分",
+            value: 10,
+            checked: false
+          },
+          {
+            name: "12学分",
+            value: 12,
+            checked: false
+          }
+        ]
+      },
+      {
+        name: "type",
+        title: "课程类型",
+        radios: [
+          {
+            name: "基础课",
+            value: "基础课",
+            checked: false
+          },
+          {
+            name: "专业基础课",
+            value: "专业基础课",
+            checked: false
+          },
+          {
+            name: "专业课",
+            value: "专业课",
+            checked: false
+          },
+          {
+            name: "必修课",
+            value: "必修课",
+            checked: false
+          },
+          {
+            name: "限选课",
+            value: "限选课",
+            checked: false
+          },
+          {
+            name: "任选课",
+            value: "任选课",
+            checked: false
+          }
+        ]
+      },
+      {
+        name: "examType",
         title: "考核方式",
         radios: [
           {
-            name: "论文",
-            value: 1,
-            checked: false
-          },
-          {
             name: "考试",
-            value: 2,
+            value: "考试",
             checked: false
           },
           {
-            name: "大作业",
-            value: 3,
-            checked: false
-          },
-          {
-            name: "其他",
-            value: 4,
+            name: "考查",
+            value: "考查",
             checked: false
           }
         ]
       },
       {
-        name: "task",
-        title: "作业情况",
+        name: "college",
+        title: "所属学院",
         radios: [
           {
-            name: "有作业",
-            value: 1,
+            name: "基础教学学院",
+            value: "基础教学学院",
             checked: false
           },
           {
-            name: "没作业",
-            value: 2,
-            checked: false
-          }
-        ]
-      },
-      {
-        name: "campus",
-        title: "校区",
-        radios: [
-          {
-            name: "江安",
-            value: "江安",
+            name: "计算机与软件学院",
+            value: "计算机与软件学院",
             checked: false
           },
           {
-            name: "望江",
-            value: "望江",
+            name: "数字艺术与设计学院",
+            value: "数字艺术与设计学院",
             checked: false
           },
           {
-            name: "华西",
-            value: "华西",
+            name: "智能与电子工程学院",
+            value: "智能与电子工程学院",
+            checked: false
+          },
+          {
+            name: "信息与商务管理学院",
+            value: "信息与商务管理学院",
+            checked: false
+          },
+          {
+            name: "创新创业学院",
+            value: "创新创业学院",
+            checked: false
+          },
+          {
+            name: "国际教育学院",
+            value: "国际教育学院",
+            checked: false
+          },
+          {
+            name: "高等职业技术学院",
+            value: "高等职业技术学院",
+            checked: false
+          },
+          {
+            name: "外国语学院",
+            value: "外国语学院",
             checked: false
           }
         ]
@@ -361,6 +478,37 @@ export default class CourseLists extends wepy.page {
             checked: false
           }
         ]
+      },
+      {
+        name: "session",
+        title: "上课节次",
+        radios: [
+         {
+            name: "第一大节",
+            value: 1,
+            checked: false
+          },
+          {
+            name: "第二大节",
+            value: 4,
+            checked: false
+          },
+          {
+            name: "第三大节",
+            value: 5,
+            checked: false
+          },
+          {
+            name: "第四大节",
+            value: 7,
+            checked: false
+          },
+          {
+            name: "第五大节",
+            value: 9,
+            checked: false
+          }
+        ]
       }
     ]
   };
@@ -373,7 +521,7 @@ export default class CourseLists extends wepy.page {
     orderHandler() {
       const self = this;
       wepy.showActionSheet({
-        itemList: ["评价逆序", "评价顺序", "平均分逆序", "平均分顺序"],
+        itemList: ["课程号顺序", "课程号逆序", "课时顺序", "课时逆序","学分顺序","学分逆序"],
         success: function(res) {
           self.orderIndex = res.tapIndex;
           self.order = orders[res.tapIndex];
@@ -413,14 +561,9 @@ export default class CourseLists extends wepy.page {
   newCourse(courses) {
     for (let i = 0; i < courses.length; i++) {
       const course = courses[i];
-      courses[i].call_name = callTypes[courses[i].call_name];
-      courses[i].task = taskTypes[courses[i].task];
-      courses[i].exam_type = examTypes[courses[i].exam_type];
-      courses[i].avg_grade = courses[i].avg_grade.toFixed(2);
-      courses[i].fail_rate = (course.fail_rate * 100).toFixed(2);
-      let teachers = courses[i].teacher.split(",");
+      let teachers = courses[i].teachers.split(",");
       let is_more = teachers.length > 1 ? "等" : "";
-      courses[i].teacher = teachers[0] + is_more;
+      courses[i].teachers = teachers[0] + is_more;
     }
     return courses;
   }

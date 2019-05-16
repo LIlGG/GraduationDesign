@@ -16,9 +16,11 @@ export default class extends wepy.app {
       'pages/index',
       'pages/contact/detail',
       'pages/contact/lists',
+      'pages/course/details',
       'pages/course/lists',
       'pages/course/comment',
       'pages/course/commentLists',
+      'pages/course/search',
       'pages/evaluate/lists',
       'pages/lecture/lecture',
       'pages/library/loan',
@@ -59,12 +61,12 @@ export default class extends wepy.app {
           iconPath: 'icon/home.png',
           selectedIconPath: 'icon/home@select.png'
         },
-        // {
-        //   pagePath: 'pages/course/lists',
-        //   text: '寻课',
-        //   iconPath: 'icon/course.png',
-        //   selectedIconPath: 'icon/course@select.png'
-        // },
+        {
+          pagePath: 'pages/course/lists',
+          text: '寻课',
+          iconPath: 'icon/course.png',
+          selectedIconPath: 'icon/course@select.png'
+        },
         {
           pagePath: 'pages/newsLists',
           text: '资讯',
@@ -103,7 +105,7 @@ export default class extends wepy.app {
       }
       wepy.showModal({
         title: "通知", //提示的标题,
-        content: res.data.abstracts, //提示的内容,
+        content: `${res.data.abstracts}`, //提示的内容,
         showCancel: true, //是否显示取消按钮,
         cancelText: "取消", //取消按钮的文字，默认为取消，最多 4 个字符,
         cancelColor: "#000000", //取消按钮的文字颜色,

@@ -47,16 +47,14 @@
         {{item.name}}
       </view>
       <view class="teacher">
-        {{item.teacher}}
+        {{item.teachers}}
       </view>
     </view>
     <view class="tags">
-      <view wx:if="{{item.exam_type}}" class="tag">{{item.exam_type}}</view>
-      <view wx:if="{{item.call_name}}" class="tag">{{item.call_name}}</view>
-      <view wx:if="{{item.task}}" class="tag">{{item.task}}</view>
-      <!-- <view wx:if="{{item.avg_grade > 0}}" class="tag">平均分: {{item.avg_grade}}</view> -->
-      <view wx:if="{{item.fail_rate == 0}}" class="tag">无挂科</view>
-      <view wx:if="{{item.fail_rate > 0}}" class="tag">挂科率: {{item.fail_rate}}</view>
+      <view wx:if="{{item.examType}}" class="tag">{{item.examType}}</view>
+      <view wx:if="{{item.type}}" class="tag">{{item.type}}</view>
+      <view wx:if="{{item.classHour}}" class="tag">{{item.classHour}}课时</view>
+      <view wx:if="{{item.college}}" class="tag">{{item.college}}</view>
     </view>
   </view>
 </template>
@@ -75,13 +73,13 @@
       }
     }
     methods = {
-      to() {
-        if (!this.isTo) return;
-        const q = `course_id=${this.item.course_id}&lesson_id=${this.item.lesson_id}`
-        wepy.navigateTo({
-          url: "/pages/course/details?" + q
-        })
-      }
+      // to() {
+      //   if (!this.isTo) return;
+      //   const q = `course_id=${this.item.id}&lesson_id=${this.item.lessonId}`
+      //   wepy.navigateTo({
+      //     url: "/pages/course/details?" + q
+      //   })
+      // }
     }
   }
 </script>

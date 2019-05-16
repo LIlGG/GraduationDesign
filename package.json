@@ -1,6 +1,6 @@
 {
   "name": "me-neusoft",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "服务于大连东软信息学院学生的一个综合工具类微信小程序",
   "main": "dist/app.js",
   "scripts": {

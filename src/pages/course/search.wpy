@@ -115,7 +115,19 @@ page {
       <repeat for="{{courses}}" item="data" key="index">
         <Card :item.sync="data"></Card>
       </repeat>
+      <view class="add" @tap="addCourse" wx:if="{{courses.length == 0 && from == 'add'}}">
+        没有结果？点击添加自定义课程
+      </view>
     </scroll-view>
+    <view class="add-schedule">
+      <view class="order" @tap="orderHandler">
+        <view>
+          {{orderNames[orderIndex]}}
+        </view>
+        <view class="iconfont icon-jiantouarrow483 {{orderIndex % 2 == 1 ? 'asc' : ''}}"></view>
+      </view>
+      <view @tap="addCourse" wx:if="{{from == 'add'}}" class="">自定义</view>
+    </view>
   </view>
 </template>
 
@@ -212,6 +224,12 @@ export default class CourseLists extends wepy.page {
         fail: function(res) {
           console.log(res.errMsg);
         }
+      });
+    },
+    addCourse() {
+      // 跳转到自定义课程界面
+      wepy.navigateTo({
+        url: "/pages/addSchedule"
       });
     },
     changeSearch(e) {

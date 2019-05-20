@@ -126,6 +126,7 @@ export default class ContactDetail extends wepy.page {
       return;
     }
     const category = JSON.parse(option.category);
+    category.url = unescape(category.url);
     this.category = category;
     wepy.setNavigationBarTitle({ title: category.name + "通讯录" });
     this.get();

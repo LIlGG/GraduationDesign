@@ -175,7 +175,7 @@ page {
 
 .course-chart {
   display: block;
-  height: 750rpx;
+  height: 830rpx;
   width: calc(~"100% - 70rpx");
 
   .chart-header {
@@ -240,12 +240,14 @@ ad {
           <view class="title">
             <view>时间</view>
             <view>地点</view>
+            <view>教师</view>
           </view>
           <view class="address-list">
             <block wx:for="{{course_items}}" wx:key="index">
               <view>
                 <view>{{item.week}}周{{item.day_str}} {{item.session_str}}小节</view>
-                <view>{{item.campus}}{{item.building}} {{item.classroom}}</view>
+                <view>本校区 {{item.building}} {{item.classroom}}</view>
+                <view>{{item.teacherName}}</view>
               </view>
             </block>
           </view>
@@ -259,7 +261,7 @@ ad {
             <view>课程号</view>
           </view>
           <view>
-            <view>{{course.courses[0].course_id}}</view>
+            <view>{{course.courseId}}</view>
           </view>
         </view>
         <view class="right">
@@ -267,7 +269,7 @@ ad {
             <view>学分</view>
           </view>
           <view>
-            <view>{{course.courses[0].credit}}</view>
+            <view>{{course.credit}}</view>
           </view>
         </view>
       </view>
@@ -277,7 +279,7 @@ ad {
             <view>课序号</view>
           </view>
           <view>
-            <view>{{course.courses[0].lesson_id}}</view>
+            <view>{{course.lessonId}}</view>
           </view>
         </view>
         <view class="right">
@@ -285,7 +287,7 @@ ad {
             <view>考试类型</view>
           </view>
           <view>
-            <view>{{course.courses[0].exam_type}}</view>
+            <view>{{course.examType}}</view>
           </view>
         </view>
       </view>
@@ -294,25 +296,25 @@ ad {
           <view>学院</view>
         </view>
         <view>
-          <view>{{course.courses[0].college}}</view>
+          <view>{{course.college}}</view>
         </view>
       </view>
-      <view>
+      <!-- <view>
         <view class="title">
           <view>教师</view>
         </view>
         <view>
           <view>{{course.course_count.teacher_all}}</view>
         </view>
-      </view>
-      <view>
+      </view> -->
+      <!-- <view>
         <view class="title">
           <view>选课限制</view>
         </view>
         <view>
           <view>{{course.courses[0].course_limit}}</view>
         </view>
-      </view>
+      </view> -->
     </view>
     <view class="header">
       成绩分布
@@ -350,7 +352,7 @@ ad {
               <view class="avatar" style="background-image: url('{{item.avatar}}');">
               </view>
               <view>
-                <view class="username">{{item.nick_name || '某同学'}}</view>
+                <view class="username">{{item.nickName || '某同学'}}</view>
                 <view class="time">{{item.updated_str}}</view>
               </view>
             </view>
@@ -370,8 +372,8 @@ ad {
       </view>
     </view>
     <cover-view class="new-comment">
-      <cover-view wx:if="{{course.evaluate.id > 0}}" @tap="newComment">
-        {{ course.evaluate.status == -1 ? "添加评价" : "编辑评价" }}
+      <cover-view wx:if="{{evaluate.id >= 0}}" @tap="newComment">
+        {{ evaluate.status == -1 ? "添加评价" : "编辑评价" }}
       </cover-view>
     </cover-view>
   </view>
@@ -386,9 +388,6 @@ import DataMixin from "../../mixins/data";
 import Card from "../../components/course/card";
 import wxCharts from "../../plugins/wxcharts-min.js";
 import dayjs from "dayjs";
-const callTypes = ["", "不点名", "偶尔点名", "抽点", "全点"];
-const examTypes = ["", "论文", "考试", "大作业", "其他"];
-const taskTypes = ["", "没作业", "有作业"];
 let pieChart = null;
 export default class CourseLists extends wepy.page {
   config = {
@@ -402,6 +401,7 @@ export default class CourseLists extends wepy.page {
     options: {},
     course: {},
     item: {},
+    evaluate:{},
     courses: {},
     isTo: false,
     evaluates: [],
@@ -426,7 +426,7 @@ export default class CourseLists extends wepy.page {
       g80: 0,
       g90: 0
     };
-    this.course.course_grades.forEach(e => {
+    this.course_grades.forEach(e => {
       for (const x in grade_count) {
         if (x == "all") continue;
         grade_count[x] += e[x];
@@ -494,33 +494,37 @@ export default class CourseLists extends wepy.page {
     });
   }
   newCourseCount(course) {
-    course.call_name = callTypes[course.call_name];
-    course.task = taskTypes[course.task];
-    course.exam_type = examTypes[course.exam_type];
-    course.avg_grade = course.avg_grade.toFixed(2);
-    course.fail_rate = (course.fail_rate * 100).toFixed(2);
+    course.avg_grade = course.avgGrade.toFixed(2);
+    course.fail_rate = (course.failRate * 100).toFixed(2);
     course.teacher_all = course.teacher;
     let teachers = course.teacher.split(",");
     let is_more = teachers.length > 1 ? "等" : "";
-    course.teacher = teachers[0] + is_more;
+    course.teachers = teachers[0] + is_more;
     return course;
   }
-  newCourse(courses) {
-    for (let i = 0; i < courses.length; i++) {
-      courses[i].course_name = courses[i].name;
+  newCourse(course) {
+    for (let i = 0; i < course.courseSchedules.length; i++) {
       // 计算上课节次
-      let sessions = courses[i].session.split(",");
+      let sessions = course.courseSchedules[i].session.split(",");
       if (sessions.length > 1) {
-        courses[i].session_str =
+        course.courseSchedules[i].session_str =
           sessions[0] + "-" + sessions[sessions.length - 1];
       }
       // 计算上课时间
-      courses[i].day_str = ["", "一", "二", "三", "四", "五", "六", "七"][
-        courses[i].day
-      ];
+      course.courseSchedules[i].day_str = course.courseSchedules[i].day;
+      // 计算当前所在教室
+      let classroomNames = course.courseSchedules[i].classroomName.split("-");
+      if(classroomNames.length == 2){
+          course.courseSchedules[i].building = classroomNames[0];
+          course.courseSchedules[i].classroom = classroomNames[1]
+      } else {
+          course.courseSchedules[i].building = "";
+          course.courseSchedules[i].classroom = classroomNames[0]
+      }
+      
       // 计算上课周次
       let week = "";
-      let weeks = courses[i].all_week.split(",");
+      let weeks = course.courseSchedules[i].allWeek.split(",");
       if (weeks.length > 0) {
         let start = weeks[0];
         let prev = weeks[0];
@@ -543,12 +547,12 @@ export default class CourseLists extends wepy.page {
           week += start;
         }
       }
-      courses[i].week = week;
+      course.courseSchedules[i].week = week;
     }
 
     // 一位数组变二维，一行只放两个上课节次
     let newCourses = [[]];
-    courses.forEach(e => {
+    course.courseSchedules.forEach(e => {
       if (newCourses[newCourses.length - 1].length >= 2) {
         newCourses.push([]);
       }
@@ -561,7 +565,7 @@ export default class CourseLists extends wepy.page {
       evaluates[i].avatar =
         evaluates[i].avatar ||
         "http://scuplus-1251451068.coscd.myqcloud.com/icon/user@select.png";
-      evaluates[i].updated_str = dayjs(evaluates[i].updated_at).format(
+      evaluates[i].updated_str = dayjs(evaluates[i].updatedAt).format(
         "YYYY-MM-DD HH:mm"
       );
     }
@@ -569,37 +573,28 @@ export default class CourseLists extends wepy.page {
   }
   methods = {
     newComment() {
-      // 检查是否拥有权限
       wepy.navigateTo({
-        url: "/pages/course/comment?id=" + this.course.evaluate.id
+        url: "/pages/course/comment?id=" + this.evaluate.id + "&course_id=" + this.course.id + "&course_name=" + this.course.name
       });
     }
   };
   async init() {
-    const resp = await this.GET("/course", this.options);
-    this.course = resp.data;
+    const resp = await this.GET("/course/details", this.options);
+    this.course = resp.data.course;
+    this.course_grades = resp.data.course_grades;
+    this.evaluate = resp.data.evaluate;
+    // 暂时取消成绩分布
     this.item = this.newCourseCount(resp.data.course_count);
-    this.courses = this.newCourse(resp.data.courses);
+    this.courses = this.newCourse(resp.data.course);
     this.evaluates = this.newEvaluate(resp.data.course_evaluates);
+    console.log(this.item);
+    
     wepy.setNavigationBarTitle({
-      title: this.item.name
+      title: this.course.name
     });
-    // 判断自定义课程是否添加了该门课程
-    const items = db.Get("myScheduleItems") || [];
-    if (items.length > 0) {
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        if (
-          item.course_id == this.item.course_id &&
-          item.lesson_id == this.item.lesson_id
-        ) {
-          this.inSchedule = true;
-          break;
-        }
-      }
-    }
 
-    // 初始化图表
+
+    //初始化图表
     this.initChart();
     this.$apply();
   }

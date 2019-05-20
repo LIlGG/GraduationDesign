@@ -96,7 +96,7 @@ button {
             </block>
           </view>
         </radio-group>
-        <textarea wx:if="{{item.type == 'textarea'}}" name="{{item.name}}" value="{{this.item.comment}}" placeholder="请输入评价"></textarea>
+        <textarea wx:if="{{item.type == 'textarea'}}" name="{{item.name}}" value="{{item.comment}}" placeholder="请输入评价"></textarea>
       </block>
       <button wx:if="{{!(from == 'evaluate' && eva_params.status == 1)}}" form-type="submit">
         提交课程评价
@@ -106,7 +106,7 @@ button {
       您的评价点名/考核/作业选项不会被提交到教务处。系统将您的评价会匿名展示在课程的详细信息下，请客观理性的评价。
     </view>
     <view wx:else class="tips">
-      您的评价将会匿名展示在课程的详细信息下，请客观理性的评价。
+      您的评价将会匿名展示在课程的详细信息下，请客观理性的评价（均不会提交至教务处）。
     </view>
   </view>
 </template>
@@ -130,7 +130,7 @@ export default class CourseLists extends wepy.page {
       {
         comment:"",
         type: "radio",
-        name: "call_name",
+        name: "callName",
         title: "点名",
         radios: [
           {
@@ -158,7 +158,7 @@ export default class CourseLists extends wepy.page {
       {
         comment:"",
         type: "radio",
-        name: "exam_type",
+        name: "examType",
         title: "考核",
         radios: [
           {
@@ -205,6 +205,35 @@ export default class CourseLists extends wepy.page {
             checked: false
           }
         ]
+      },
+      {
+        comment:"",
+        type: "radio",
+        name: "assess",
+        title: "课程评价",
+        radios: [
+          {
+            name: "很赞",
+            value: 1,
+            checked: false
+          },
+          {
+            name: "一般",
+            value: 2,
+            checked: false
+          },
+          {
+            name: "不好",
+            value: 3,
+            checked: false
+          }
+        ]
+      },
+      {
+        comment:"",
+        type: "textarea",
+        name: "comment",
+        title: "您对这门课的评价？"
       }
     ],
     eva:{},
@@ -277,21 +306,29 @@ export default class CourseLists extends wepy.page {
 
   async initCourse(option) {
     this.params.id = option.id;
+    this.params.courseId = option.course_id;
+    this.course_name = option.course_name;
+    this.course_id = option.course_id;
     // 有id表示需要修改
     if ("id" in option && option.id > 0) {
-      const resp = await this.GET("/course/comment?id=" + option.id);
-      this.course_name = resp.data.course_name;
+      const resp = await this.GET("/course/comment/info?id=" + option.id);
       for (let i = 0; i < this.items.length; i++) {
         const v = resp.data[this.items[i].name];
-        for (let j = 0; j < this.items[i].radios.length; j++) {
+        for (let j = 0; this.items[i].type === 'radio' && j < this.items[i].radios.length; j++) {
           this.items[i].radios[j].checked = false;
           if (v == this.items[i].radios[j].value)
             this.items[i].radios[j].checked = true;
         }
+        
+        if(this.items[i].type == "textarea"){
+          this.items[i].comment += v;
+        }
       }
-      this.comment = resp.data.comment;
-      this.$apply();
     }
+    this.eva.items = this.items;
+    console.log(this.items);
+    
+    this.$apply();
   }
   async initEva(option) {
     try {
@@ -299,7 +336,6 @@ export default class CourseLists extends wepy.page {
       const res = await this.POST("/evaluate/" + option.id, {"data":option.data});
       res.data.items = this.items.concat(res.data.items);
       this.eva = res.data;
-      console.log(this.eva)
       // let course_eva = res.data.course_evaluate;
       // this.eva_params = eva;
       // if (eva.status) {

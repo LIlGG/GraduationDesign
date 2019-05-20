@@ -47,7 +47,10 @@ export default class ContactLists extends wepy.page {
 
   methods = {
     to(i) {
-      const item = this.items[i]
+      const item = new Object();
+      item.id  = this.items[i].id;
+      item.name = this.items[i].name;
+      item.url = escape(this.items[i].url);
       wepy.navigateTo({ url: "/pages/contact/detail?category=" + JSON.stringify(item) });
     }
   };

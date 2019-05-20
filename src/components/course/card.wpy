@@ -73,13 +73,13 @@
       }
     }
     methods = {
-      // to() {
-      //   if (!this.isTo) return;
-      //   const q = `course_id=${this.item.id}&lesson_id=${this.item.lessonId}`
-      //   wepy.navigateTo({
-      //     url: "/pages/course/details?" + q
-      //   })
-      // }
+      to() {
+        if (!this.isTo) return;
+        const q = `course_id=${this.item.id}&lesson_id=${this.item.lessonId}`
+        wepy.navigateTo({
+          url: "/pages/course/details?" + q
+        })
+      }
     }
   }
 </script>

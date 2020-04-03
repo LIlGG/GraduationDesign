@@ -8,8 +8,8 @@ export const version = '1.0.1' // 版本号
 
 export const OSSConf = {
   key: {
-    accessKeyId: 'LTAI6klXkZynQctv',
-    accessKeySecret: 'SvyCnqMThmPUJBbOGziWxS9Atyspm7'
+    accessKeyId: '****',
+    accessKeySecret: '****'
   },
   timeout: 87600,
   uploadImageUrl: 'https://me-neusoft.oss-cn-beijing.aliyuncs.com'

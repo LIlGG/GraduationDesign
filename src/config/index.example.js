@@ -12,5 +12,5 @@ export const OSSConf = {
     accessKeySecret: '****'
   },
   timeout: 87600,
-  uploadImageUrl: 'https://me-neusoft.oss-cn-beijing.aliyuncs.com'
+  uploadImageUrl: '****'
 }
